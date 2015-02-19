@@ -28,6 +28,11 @@ var/
 *.manifest
 *.spec
 
+#Stuff
+*.xml
+*.pyc
+*.dt
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
