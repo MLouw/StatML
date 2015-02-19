@@ -1,0 +1,62 @@
+__author__ = 'Mia, Daniela and Michael'
+
+'''
+Imports:
+'''
+import sys
+import codecs
+import numpy as np
+
+class Linear_Classifier:
+    self.number_of_classes
+    self.number_of_features
+    self.W
+
+    def from_file(self, file_name):
+	    print >>sys.stderr, "Reading from file \'"+file_name+"\'..."
+	    features = []
+	    labels = []
+	    for line in codecs.open(file_name, encoding='utf-8'):
+
+	        feature = line.strip().split(' ')
+	        features.append([float(f) for f in feature[:-1]])
+	        labels.append(int(feature[-1]))
+
+	    return features, labels
+
+
+	def fit(self, features, labels):
+	    self.number_of_classes = len(set(labels))
+	    self.number_of_features = len(features[0])
+	    X = [np.concatenate(([1],f)) for f in features]
+	    T = []
+
+	    for l in labels: 
+	    	t = [0]*number_of_classes
+	    	t[l] = 1
+	    	T.append(t)
+	    
+	    X_pinverse = np.linalg.pinv(X)
+	    self.W = np.dot(X_pinverse, T) 
+
+	    return np.transpose(W)
+
+
+	def predict(self, feature):
+	    x = np.concatenate(([1],feature))
+	    for i in xrange(self.number_of_classes):
+	    	y_class = np.dot(x, self.W[i])
+	    	print y_class
+
+	   
+	
+
+
+
+
+
+
+'''Test playground'''
+lc = Linear_Classifier()
+lc.fit(*lc.from_file('IrisTrain2014.dt'))
+lc.predict([5.4, 0.34])
