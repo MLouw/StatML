@@ -63,7 +63,10 @@ class Linear_Classifier():
                 best_i = i
 
         return best_i
-            
+
+    def predict_all(self, features):
+        return [self.predict(feature) for feature in features]
+
     def evaluate(self, test_features, test_labels):
         error = 0
         for i in xrange(len(test_features)):
@@ -71,6 +74,14 @@ class Linear_Classifier():
                 error += 1
 
         return float(error)/len(test_features)
+
+    def draw_decision_boundaries(self, ax, colors=[[1,0,0],[0,1,0],[0,0,1]], iterations=5):
+
+        for i in xrange(self.number_of_classes):
+            xd = -self.W[i][0]/self.W[i][1]
+            yd = self.W[i][0]/self.W[i][2]
+
+            ax.plot([-xd*iterations, xd*iterations], [-yd*(iterations+1),  yd*(iterations-1)], color=colors[i])
 
 
 
