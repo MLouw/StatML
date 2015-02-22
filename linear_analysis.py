@@ -75,7 +75,7 @@ class Linear_Classifier():
 
         return float(error)/len(test_features)
 
-    def draw_decision_boundaries(self, ax, colors=[[1,0,0],[0,1,0],[0,0,1]], iterations=5):
+    def draw_discrimination_functions(self, ax, colors=[[1,0,0],[0,1,0],[0,0,1]], iterations=5):
 
         for i in xrange(self.number_of_classes):
             xd = -self.W[i][0]/self.W[i][1]
@@ -83,21 +83,41 @@ class Linear_Classifier():
 
             ax.plot([-xd*iterations, xd*iterations], [-yd*(iterations+1),  yd*(iterations-1)], color=colors[i])
 
+    def draw_decision_boundaries(self, ax, iterations=20):
+        ls = [None]*3
+        ls[0] = self.W[0] - self.W[1]
+        ls[1] = self.W[1] - self.W[2]
+        ls[2] = self.W[2] - self.W[0]
 
+        px, py = Utility.line_intersection(ls[0], ls[1])
+
+        for i in xrange(3):
+            xd = -ls[i][0]/ls[i][1]
+            yd = ls[i][0]/ls[i][2]
+
+            limx = xd*iterations
+            limy = yd*(iterations-1)
+
+            if np.dot([1,limx, limy], self.W[(i+2)%3]) > 0:
+                limx = -limx
+                limy = -limy
+
+            ax.plot([px, limx], [py,  limy],color=[0,0,0])
 
 '''Test playground'''
-lc = Linear_Classifier()
+if __name__ == '__main__':
+    lc = Linear_Classifier()
 
-train_data, train_labels = lc.from_file('IrisTrain2014.dt')
-test_data, test_labels = lc.from_file('IrisTest2014.dt')
-n_function = Utility.normalize(train_data)
-normalized_train_data = n_function(train_data)
-normalized_test_data = n_function(test_data)
+    train_data, train_labels = lc.from_file('IrisTrain2014.dt')
+    test_data, test_labels = lc.from_file('IrisTest2014.dt')
+    n_function = Utility.normalize(train_data)
+    normalized_train_data = n_function(train_data)
+    normalized_test_data = n_function(test_data)
 
 
 
-lc.fit(normalized_train_data, train_labels)
-print lc.evaluate(normalized_train_data, train_labels)
-print lc.evaluate(normalized_test_data, test_labels)
+    lc.fit(normalized_train_data, train_labels)
+    print lc.evaluate(normalized_train_data, train_labels)
+    print lc.evaluate(normalized_test_data, test_labels)
 
 

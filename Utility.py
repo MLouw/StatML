@@ -52,3 +52,9 @@ def plot_irises(data, labels, ax, point_colors=[[1,0,0],[0,1,0],[0,0,1]]):
     label = ['setosa', 'virginica', 'versicolor']
     for i in xrange(len(point_colors)):
         plot_points([data[j] for j in xrange(len(data)) if labels[j] == i], ax, point_color=point_colors[i], label=label[i])
+
+
+def line_intersection(l1, l2):
+    a = np.array([[l1[1], l1[2]], [l2[1], l2[2]]])
+    b = np.array([-l1[0], -l2[0]])
+    return np.linalg.solve(a,b)

@@ -16,13 +16,15 @@ normalized_train_data = n_function(train_data)
 normalized_test_data = n_function(test_data)
 
 
-lc.fit(normalized_train_data, train_labels)
+lc.fit(train_data, train_labels)
 print lc.evaluate(train_data, train_labels)
 print lc.evaluate(test_data, test_labels)
 
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-Utility.plot_irises(normalized_train_data, lc.predict_all(normalized_train_data), ax)
+Utility.plot_irises(train_data, lc.predict_all(train_data), ax)
+
+lc.draw_discrimination_functions(ax)
 
 lc.draw_decision_boundaries(ax)
 plt.show()
