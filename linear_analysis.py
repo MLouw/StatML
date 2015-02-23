@@ -9,9 +9,10 @@ import numpy as np
 import Utility
 import math
 
-##
-# Linear classifier used in exercise 1.1 and 1.2
-#
+###########################
+# Linear classifier used  #
+# in exercise 1.1 and 1.2 #
+###########################
 class Linear_Classifier():
 
     def __init__(self):
@@ -31,13 +32,18 @@ class Linear_Classifier():
 
         return features, labels
 
-# train the model to fit the data given in features and labels
+    ###########################
+    # The fit function below  #
+    # trains the model to fit #
+    # the data given in the   #
+    # features and labels.    #
+    ###########################
     def fit(self, features, labels):
         self.number_of_classes = len(set(labels))
         self.number_of_features = len(features[0])
-        # add in the bias
+        # The bias is added
         X = [np.concatenate(([1],f)) for f in features]  
-        #calculate T as given by BISHOP
+        # T is calculated as given by Bishop
         T = []
 
         for l in labels: 
@@ -45,11 +51,11 @@ class Linear_Classifier():
             t[l] = 1
             T.append(t)
 
-        #calculate pseudo inverse with the .pinv        
+        # The pseudo inverse is calculated with .pinv        
         X_pinverse = np.linalg.pinv(X)
-        #calculate W as specified by BISHOP
+        # W is calculated as specified by Bishop
         self.W = np.dot(X_pinverse, T) 
-        #transposed for easier lookup
+        # W is transposed for easier lookup
         self.W = np.transpose(self.W)
 
 
@@ -57,35 +63,35 @@ class Linear_Classifier():
         self.number_of_classes = len(set(labels))
         self.number_of_features = len(features[0])
 
-        #Divide the features into classes:
+        # Divide the features into classes:
         classes = [[features[p] for p in xrange(len(features)) if labels[p]==i] for i in xrange(self.number_of_classes)]
 
-        #Calculate the mean of every class:
+        # Calculate the mean of every class:
         class_means = [Utility.mean(data) for data in classes]
 
-        #Estimate a common covariance:
+        #E stimate a common covariance:
         covariance = [[0,0],[0,0]]
         for i in xrange(self.number_of_classes):
             covariance += Utility.covariance(classes[i], class_means[i])
         covariance = np.multiply(covariance, 1.0/(len(data)-self.number_of_classes))
 
-        #Calculate class probabilities:
+        # Calculate class probabilities:
         class_log_probabilities = [math.log(len(c)/float(len(features))) for c in classes]
 
-        #Construct the W:
+        # Construct the W:
         self.W = [None]*self.number_of_classes
         for i in xrange(self.number_of_classes):
-            #Initialize the row:
+            # Initialize the row:
             self.W[i] = [None]*(self.number_of_features+1)
 
-            #Build the constant term:
+            # Build the constant term:
             self.W[i][0] = class_log_probabilities[i] - 0.5*np.dot(class_means[i], np.dot(np.linalg.inv(covariance), class_means[i]))
 
-            #Build the x coefficients:
+            # Build the x coefficients:
             x_coeff = np.dot(np.linalg.inv(covariance), class_means[i])
             self.W[i][1:] = x_coeff
 
-            #Turn the list into a numpy array for easier manipulaion:
+            # Turn the list into a numpy array for easier manipulaion:
             self.W[i] = np.array(self.W[i])
 
 
