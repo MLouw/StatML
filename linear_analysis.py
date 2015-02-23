@@ -52,7 +52,6 @@ class Linear_Classifier():
         #transposed for easier lookup
         self.W = np.transpose(self.W)
 
-        print self.W
 
     def fit_fishers(self, features, labels):
         self.number_of_classes = len(set(labels))
@@ -89,7 +88,6 @@ class Linear_Classifier():
             #Turn the list into a numpy array for easier manipulaion:
             self.W[i] = np.array(self.W[i])
 
-        print self.W
 
     def predict(self, feature):
         x = np.concatenate(([1],feature))
@@ -136,7 +134,7 @@ class Linear_Classifier():
             limx = xd*iterations
             limy = yd*(iterations-1)
 
-            if np.dot([1,limx, limy], self.W[(i+2)%3]) > 0:
+            if self.predict([limx,limy]) == (i+2)%3:
                 limx = -limx
                 limy = -limy
 
