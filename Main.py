@@ -15,8 +15,7 @@ n_function = Utility.normalize(train_data)
 normalized_train_data = n_function(train_data)
 normalized_test_data = n_function(test_data)
 
-
-lc.fit(train_data, train_labels)
+lc.fit_fishers(train_data, train_labels)
 print lc.evaluate(train_data, train_labels)
 print lc.evaluate(test_data, test_labels)
 

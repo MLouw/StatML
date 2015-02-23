@@ -7,6 +7,7 @@ import sys
 import codecs
 import numpy as np
 import Utility
+import math
 
 ##
 # Linear classifier used in exercise 1.1 and 1.2
@@ -51,6 +52,44 @@ class Linear_Classifier():
         #transposed for easier lookup
         self.W = np.transpose(self.W)
 
+        print self.W
+
+    def fit_fishers(self, features, labels):
+        self.number_of_classes = len(set(labels))
+        self.number_of_features = len(features[0])
+
+        #Divide the features into classes:
+        classes = [[features[p] for p in xrange(len(features)) if labels[p]==i] for i in xrange(self.number_of_classes)]
+
+        #Calculate the mean of every class:
+        class_means = [Utility.mean(data) for data in classes]
+
+        #Estimate a common covariance:
+        covariance = [[0,0],[0,0]]
+        for i in xrange(self.number_of_classes):
+            covariance += Utility.covariance(classes[i], class_means[i])
+        covariance = np.multiply(covariance, 1.0/(len(data)-self.number_of_classes))
+
+        #Calculate class probabilities:
+        class_log_probabilities = [math.log(len(c)/float(len(features))) for c in classes]
+
+        #Construct the W:
+        self.W = [None]*self.number_of_classes
+        for i in xrange(self.number_of_classes):
+            #Initialize the row:
+            self.W[i] = [None]*(self.number_of_features+1)
+
+            #Build the constant term:
+            self.W[i][0] = class_log_probabilities[i] - 0.5*np.dot(class_means[i], np.dot(np.linalg.inv(covariance), class_means[i]))
+
+            #Build the x coefficients:
+            x_coeff = np.dot(np.linalg.inv(covariance), class_means[i])
+            self.W[i][1:] = x_coeff
+
+            #Turn the list into a numpy array for easier manipulaion:
+            self.W[i] = np.array(self.W[i])
+
+        print self.W
 
     def predict(self, feature):
         x = np.concatenate(([1],feature))
@@ -76,7 +115,6 @@ class Linear_Classifier():
         return float(error)/len(test_features)
 
     def draw_discrimination_functions(self, ax, colors=[[1,0,0],[0,1,0],[0,0,1]], iterations=5):
-
         for i in xrange(self.number_of_classes):
             xd = -self.W[i][0]/self.W[i][1]
             yd = self.W[i][0]/self.W[i][2]
