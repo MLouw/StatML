@@ -161,14 +161,26 @@ class LinearRegression():
 Pretty plots:
 '''
 
+#Defines a wrapper for evaluation of MAP:
 def map_eval_wrapper(training_data, training_targets, test_data, test_targets, alpha_val):
     map = LinearRegression()
     map.fit(training_data, training_targets, method='MAP', alpha = alpha_val, confirm=True)
     return map.evaluate(test_data, test_targets)
 
 #Performs a comparison of the three difference models:
-def compare_model(m1, m2, m3):
-    pass
+def compare_models_for_alpha(model_list, ):
+    alpha = np.linspace(10**(-5),100, num=1000)
+
+    map_eval_f = [[map_eval_wrapper(m[0], m[1], m[2], m[3], x) for x in alpha] for m in model_list]
+
+    for i in xrange(len(model_list)):
+        pylab.plot(alpha,map_eval_f[i], model_list[i][4], label=model_list[i][5])
+    pylab.legend(loc='upper right')
+    pylab.xlabel('E(alpha)')
+    pylab.ylabel('alpha')
+    pylab.title('Effect of alpha')
+
+    pylab.show()
 
 #Performs a comparison of the maximum likelihood and maximum a posteori methods:
 def compare_methods(training_data, training_targets, test_data, test_targets):
@@ -234,3 +246,12 @@ if __name__ == '__main__':
     plt.show()
 
     compare_methods(train_data, train_targets, test_data, test_targets)
+
+    train_limit_1 = lr.limit_columns([2,3], train_data)
+    test_limit_1 = lr.limit_columns([2,3], test_data)
+
+    m1 = [train_limit_1, train_targets, test_limit_1, test_targets, '-r', 'Model 1']
+    m2 = [train_limit_2, train_targets, test_limit_2, test_targets, '-g', 'Model 2']
+    m3 = [train_data, train_targets, test_data, test_targets, '-b', 'Model 3']
+
+    compare_models_for_alpha([m1, m2, m3])
