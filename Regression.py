@@ -7,6 +7,7 @@ import sys
 import codecs
 import numpy as np
 from matplotlib import pyplot as plt
+import pylab
 
 '''
 Linear regression class:
@@ -59,17 +60,17 @@ class LinearRegression():
         return [[feature[i] for i in used_columns] for feature in features]
 
     #Fit the model to a set of features and labels using the specified method:
-    def fit(self, features, targets, method='ML', alpha=None):
+    def fit(self, features, targets, method='ML', alpha=None, confirm=True):
         if method == 'ML':
-            return self.fit_maximum_likelihood(features, targets)
+            return self.fit_maximum_likelihood(features, targets, confirm)
         elif method == 'MAP':
-            return self.fit_maximum_a_posteori(features, targets, alpha)
+            return self.fit_maximum_a_posteori(features, targets, alpha, confirm)
         else:
             print>>sys.stderr, "The method name "+method+" is not valid."
 
 
     #Fit the model a set of features and labels using the maximum likelihood method:
-    def fit_maximum_likelihood(self, features, targets):
+    def fit_maximum_likelihood(self, features, targets, confirm=True):
         #Calculate the design matrix as specified by Bishop:
         design_matrix = [self.apply_basis_functions(x) for x in features]
 
@@ -79,18 +80,23 @@ class LinearRegression():
         #Calculate the weight vector:
         self.w = np.dot(pinv_design_matrix, targets)
 
-        print>>sys.stderr, "The model was fitted using maximum likelihood."
+        if confirm:
+            print>>sys.stderr, "The model was fitted using maximum likelihood."
+
 
     #Fit the model to a set of features and labels using the a posteori method:
-    def fit_maximum_a_posteori(self, features, targets, alpha, beta=1):
+    def fit_maximum_a_posteori(self, features, targets, alpha, beta=1, confirm=True):
         #Estimate the covariance:
         covariance = self.posterior_covariance(features, alpha, beta)
 
         #Estimate the mean:
         mean = self.posterior_mean(covariance, features, targets, beta)
 
+        #Set the mean as MAP estimate:
         self.w = mean
-        print>>sys.stderr, "The model was fitted using maximum a posteori."
+
+        if confirm:
+            print>>sys.stderr, "The model was fitted using maximum a posteori."
 
     #Estimate the posterior mean:
     def posterior_mean(self, posterior_covariance, features, targets, beta=1):
@@ -113,6 +119,7 @@ class LinearRegression():
 
         #Return the inverse of the sum:
         return np.linalg.inv(np.add(ft, st))
+
     '''
     Prediction:
     '''
@@ -150,9 +157,39 @@ class LinearRegression():
         for i in xrange(len(targets)):
             print 1961+i, targets[i]
 
-    #Performs a comparison of the maximum likelihood and maximum a posteori methods:
-    def compare_methods(self, training_data, training_targets, test_data, test_targets):
-        pass
+'''
+Pretty plots:
+'''
+
+def map_eval_wrapper(training_data, training_targets, test_data, test_targets, alpha_val):
+    map = LinearRegression()
+    map.fit(training_data, training_targets, method='MAP', alpha = alpha_val, confirm=True)
+    return map.evaluate(test_data, test_targets)
+
+#Performs a comparison of the three difference models:
+def compare_model(m1, m2, m3):
+    pass
+
+#Performs a comparison of the maximum likelihood and maximum a posteori methods:
+def compare_methods(training_data, training_targets, test_data, test_targets):
+    ml = LinearRegression()
+    ml.fit(training_data, training_targets, confirm=False)
+    ml_eval = ml.evaluate(test_data, test_targets)
+
+    alpha = np.linspace(10**(-5),100, num=1000)
+
+    ml_eval_f = [ml_eval for _ in alpha]
+    map_eval_f = [map_eval_wrapper(training_data, training_targets, test_data, test_targets, x) for x in alpha]
+
+    pylab.plot(alpha,ml_eval_f, '-b', label='Maximum Likelihood')
+    pylab.plot(alpha,map_eval_f, '-r', label='Maximum a Posteori')
+    pylab.legend(loc='upper right')
+    pylab.xlabel('E(alpha)')
+    pylab.ylabel('alpha')
+    pylab.title('Effect of alpha')
+
+    pylab.show()
+
 
 '''
 Testing playground:
@@ -196,3 +233,4 @@ if __name__ == '__main__':
 
     plt.show()
 
+    compare_methods(train_data, train_targets, test_data, test_targets)
