@@ -43,6 +43,25 @@ class LinearRegression():
     def draw_datapoints(self, ax, xs, ys, point_color=[0,0,0], label='<No label>'):
         ax.scatter(xs,ys, color=point_color, label=label)
         plt.gca().legend(loc='upper right')
+
+
+    #Plots a time series of year vs. prediction:
+    def plot_evaluation(self, ax, start_year, targets, color=[1,0,0], label='No label'):
+
+        offset = 10
+
+        ax.set_xlim([start_year, start_year+len(targets)])
+        ax.set_ylim([min(targets)-offset, max(targets)+offset])
+        ax.set_xlabel('Number of sunspots')
+        ax.set_ylabel('Year')
+
+        plt.gca().legend(loc='upper right')
+
+        xs = range(start_year, start_year+len(targets))
+
+        ax.plot(xs,targets, color=color, label=label)
+
+
     '''
     Metrics & Constants:
     '''
@@ -152,10 +171,6 @@ class LinearRegression():
         #Normalize and take the square root:
         return np.sqrt(1.0/len(predictions)*sum(s_diff))
 
-    #Prints a time series of year vs. prediction:
-    def print_evaluation(self, targets):
-        for i in xrange(len(targets)):
-            print 1961+i, targets[i]
 
 '''
 Pretty plots:
@@ -215,6 +230,9 @@ if __name__ == '__main__':
     train_limit_2 = lr.limit_columns([4], train_data)
     test_limit_2 = lr.limit_columns([4], test_data)
 
+    train_limit_1 = lr.limit_columns([2,3], train_data)
+    test_limit_1 = lr.limit_columns([2,3], test_data)
+
     lr.fit(train_limit_2, train_targets)
     print lr.evaluate(test_limit_2, test_targets)
 
@@ -228,6 +246,25 @@ if __name__ == '__main__':
     lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
 
     plt.show()
+
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+
+    lr.plot_evaluation(ax, 1861, test_targets, label='Actual', color=[0,1,0])
+    lr.plot_evaluation(ax, 1861, test_prediction, label='Model 2')
+
+    lr.fit(train_data, train_targets)
+    test_prediction2 = lr.predict_all(test_data)
+
+    lr.plot_evaluation(ax, 1861, test_prediction2, label='Model 3', color=[0,0,1])
+
+    lr.fit(train_limit_1, train_targets)
+    test_prediction3 = lr.predict_all(test_limit_1)
+
+    lr.plot_evaluation(ax, 1861, test_prediction3, label='Model 1', color=[0,1,1])
+    plt.show()
+
 
     print "Doing maximum a posteori..."
     lr = LinearRegression()
@@ -246,9 +283,6 @@ if __name__ == '__main__':
     plt.show()
 
     compare_methods(train_data, train_targets, test_data, test_targets)
-
-    train_limit_1 = lr.limit_columns([2,3], train_data)
-    test_limit_1 = lr.limit_columns([2,3], test_data)
 
     m1 = [train_limit_1, train_targets, test_limit_1, test_targets, '-r', 'Model 1']
     m2 = [train_limit_2, train_targets, test_limit_2, test_targets, '-g', 'Model 2']
