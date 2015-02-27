@@ -21,8 +21,8 @@ lc.fit_fishers(normalized_train_data, train_labels)
 # 1.1 #
 #######
 
-print "Training error for LDA: " + str(lc.evaluate(normalized_train_data, train_labels))
-print "Test error for LDA: " + str(lc.evaluate(normalized_test_data, test_labels))
+print "Training error for LDA: " + str(lc.evaluate(train_data, train_labels))
+print "Test error for LDA: " + str(lc.evaluate(test_data, test_labels))
 
 print "Showing plot of the data"
 fig = plt.figure()
@@ -57,8 +57,8 @@ plt.show()
 # 1.2 #
 #######
 
-print "Training error on the transformed data: "
-print "Test error on the transformed data: "
+print "Training error on the transformed data: " + str(lc.evaluate(normalized_train_data, train_labels))
+print "Test error on the transformed data: " + str(lc.evaluate(normalized_test_data, test_labels))
 
 #######
 # 2.1 #
@@ -111,6 +111,7 @@ lr = R.LinearRegression()
 lr.fit(train_limit_2, train_targets, method='MAP', alpha=0.1)
 print lr.evaluate(test_limit_2, test_targets)
 
+
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 
@@ -119,7 +120,9 @@ test_prediction = lr.predict_all(test_limit_2)
 lr.draw_datapoints(ax, train_limit_2, train_targets, point_color=[1,0,0], label='Training data')
 lr.draw_datapoints(ax, test_limit_2, test_targets, point_color=[0,1,0], label='Test targets')
 lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
-
+ax.set_title('RMS error')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
 plt.show()
 
 R.compare_methods(train_data, train_targets, test_data, test_targets)
