@@ -93,20 +93,23 @@ ax.set_ylabel('Sunspots in year t')
 plt.show()
 plt.close()
 
-print "Showing plot of years vs. predicted sunspots"
+print "Showing plot of predicted sunspots vs. years"
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 
 lr.plot_evaluation(ax, 1861, test_targets, label='Actual', color=[0,1,0])
 lr.plot_evaluation(ax, 1861, test_prediction, label='Model 2')
+print "Model 2:",lr.evaluate(test_limit_2, test_targets)
 lr.fit(train_data, train_targets)
 test_prediction2 = lr.predict_all(test_data)
+print "Model 3:",lr.evaluate(test_data, test_targets)
 lr.plot_evaluation(ax, 1861, test_prediction2, label='Model 3', color=[0,0,1])
 lr.fit(train_limit_1, train_targets)
 test_prediction3 = lr.predict_all(test_limit_1)
+print "Model 1:",lr.evaluate(test_limit_1, test_targets)
 lr.plot_evaluation(ax, 1861, test_prediction3, label='Model 1', color=[0,1,1])
 
-ax.set_title('Years vs. predicted sunspots')
+ax.set_title('Predicted sunspots vs. years')
 plt.show()
 plt.close()
 

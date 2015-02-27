@@ -52,8 +52,8 @@ class LinearRegression():
 
         ax.set_xlim([start_year, start_year+len(targets)])
         ax.set_ylim([min(targets)-offset, max(targets)+offset])
-        ax.set_xlabel('Number of sunspots')
-        ax.set_ylabel('Year')
+        ax.set_ylabel('Number of sunspots')
+        ax.set_xlabel('Year')
 
         plt.gca().legend(loc='upper right')
 
@@ -192,8 +192,8 @@ def compare_models_for_alpha(model_list):
     for i in xrange(len(model_list)):
         pylab.plot(alpha,map_eval_f[i], model_list[i][4], label=model_list[i][5])
     pylab.legend(loc='upper right')
-    pylab.xlabel('E(alpha)')
-    pylab.ylabel('alpha')
+    pylab.ylabel('E(alpha)')
+    pylab.xlabel('alpha')
     pylab.title('Effect of alpha')
 
     pylab.show()
@@ -212,8 +212,8 @@ def compare_methods(training_data, training_targets, test_data, test_targets):
     pylab.plot(alpha,ml_eval_f, '-b', label='Maximum Likelihood')
     pylab.plot(alpha,map_eval_f, '-r', label='Maximum a Posteori')
     pylab.legend(loc='upper right')
-    pylab.xlabel('E(alpha)')
-    pylab.ylabel('alpha')
+    pylab.ylabel('E(alpha)')
+    pylab.xlabel('alpha')
     pylab.title('Effect of alpha')
 
     pylab.show()
