@@ -28,31 +28,35 @@ print "Test error for LDA: " + str(lc.evaluate(test_data, test_labels))
 print "Showing plot of the data"
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-Utility.plot_irises(normalized_train_data, lc.predict_all(normalized_train_data), ax)
+Utility.plot_irises(train_data, lc.predict_all(train_data), ax)
 plt.show()
+plt.close()
 
 print "Showing plot of the data with discrimination functions"
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-Utility.plot_irises(normalized_train_data, lc.predict_all(normalized_train_data), ax, title="with discrimination functions")
+Utility.plot_irises(train_data, lc.predict_all(train_data), ax, title="with discrimination functions")
 lc.draw_discrimination_functions(ax)
 plt.show()
+plt.close()
 
 print "Showing plot of the data with discrimination functions and decision boundaries"
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-Utility.plot_irises(normalized_train_data, lc.predict_all(normalized_train_data), ax, title="with discrimination functions and decision boundaries")
+Utility.plot_irises(train_data, lc.predict_all(train_data), ax, title="with discrimination functions and decision boundaries")
 lc.draw_discrimination_functions(ax)
 lc.draw_decision_boundaries(ax)
 plt.show()
+plt.close()
 
 print "Showing plot of the test data with discrimination functions and decision boundaries"
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-Utility.plot_irises(normalized_test_data, lc.predict_all(normalized_test_data), ax, title="for the test data with discrimination functions and decision boundaries")
+Utility.plot_irises(test_data, lc.predict_all(test_data), ax, title="for the test data with discrimination functions and decision boundaries")
 lc.draw_discrimination_functions(ax)
 lc.draw_decision_boundaries(ax)
 plt.show()
+plt.close()
 
 #######
 # 1.2 #
@@ -79,13 +83,15 @@ fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 test_prediction = lr.predict_all(test_limit_2)
 lr.draw_datapoints(ax, train_limit_2, train_targets, point_color=[1,0,0], label='Training data')
+lr.draw_datapoints(ax, test_limit_2, test_targets, point_color=[0,1,0], label='Test targets')
+lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
 
 print "Showing plot of x and y variables of training set"
 ax.set_title('Training set')
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 plt.show()
-
+plt.close()
 
 print "Showing plot of years vs. predicted sunspots"
 fig = plt.figure()
@@ -102,6 +108,7 @@ lr.plot_evaluation(ax, 1861, test_prediction3, label='Model 1', color=[0,1,1])
 
 ax.set_title('Years vs. predicted sunspots')
 plt.show()
+plt.close()
 
 #######
 # 2.2 #
@@ -112,24 +119,12 @@ lr = R.LinearRegression()
 lr.fit(train_limit_2, train_targets, method='MAP', alpha=0.1)
 print lr.evaluate(test_limit_2, test_targets)
 
-
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
-
-test_prediction = lr.predict_all(test_limit_2)
-
-lr.draw_datapoints(ax, train_limit_2, train_targets, point_color=[1,0,0], label='Training data')
-lr.draw_datapoints(ax, test_limit_2, test_targets, point_color=[0,1,0], label='Test targets')
-lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
-ax.set_title('RMS error')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-plt.show()
-
 R.compare_methods(train_data, train_targets, test_data, test_targets)
+plt.close()
 
 m1 = [train_limit_1, train_targets, test_limit_1, test_targets, '-r', 'Model 1']
 m2 = [train_limit_2, train_targets, test_limit_2, test_targets, '-g', 'Model 2']
 m3 = [train_data, train_targets, test_data, test_targets, '-b', 'Model 3']
 
 R.compare_models_for_alpha([m1, m2, m3])
+plt.close()

@@ -184,7 +184,7 @@ def map_eval_wrapper(training_data, training_targets, test_data, test_targets, a
     return map.evaluate(test_data, test_targets)
 
 # Performs a comparison of the three difference models:
-def compare_models_for_alpha(model_list, ):
+def compare_models_for_alpha(model_list):
     alpha = np.linspace(10**(-5),100, num=1000)
 
     map_eval_f = [[map_eval_wrapper(m[0], m[1], m[2], m[3], x) for x in alpha] for m in model_list]
@@ -272,6 +272,8 @@ if __name__ == '__main__':
     lr.fit(train_limit_2, train_targets, method='MAP', alpha=0.1)
     print lr.evaluate(test_limit_2, test_targets)
 
+
+    '''
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
 
@@ -282,11 +284,15 @@ if __name__ == '__main__':
     lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
 
     plt.show()
+    '''
+
 
     compare_methods(train_data, train_targets, test_data, test_targets)
 
     m1 = [train_limit_1, train_targets, test_limit_1, test_targets, '-r', 'Model 1']
     m2 = [train_limit_2, train_targets, test_limit_2, test_targets, '-g', 'Model 2']
     m3 = [train_data, train_targets, test_data, test_targets, '-b', 'Model 3']
+
+    plt.close()
 
     compare_models_for_alpha([m1, m2, m3])

@@ -54,10 +54,10 @@ def plot_irises(data, labels, ax, point_colors=[[1,0,0],[0,1,0],[0,0,1]], title=
     xmax = max([d[0] for d in data])
     ymin = min([d[1] for d in data])
     ymax = max([d[1] for d in data])
-    x_offset = (xmax - xmin)/10.0
-    y_offset = (ymax - ymin)/10.0
-    ax.set_xlim([xmin-x_offset, xmax+x_offset])
-    ax.set_ylim([ymin-y_offset, ymax+y_offset])
+    x_offset = (xmax - xmin)*10.0
+    y_offset = (ymax - ymin)*10.0
+    ax.set_xlim([0, 10])
+    ax.set_ylim([0, 0.6])
     ax.set_title('Irises '+ title)
     ax.set_xlabel('x')
     ax.set_ylabel('y')
