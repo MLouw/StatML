@@ -87,9 +87,9 @@ lr.draw_datapoints(ax, test_limit_2, test_targets, point_color=[0,1,0], label='T
 lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
 
 print "Showing plot of x and y variables of training set"
-ax.set_title('Training set')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
+ax.set_title('Sunspots in year t versus year t-16')
+ax.set_xlabel('Sunspots in year t-16')
+ax.set_ylabel('Sunspots in year t')
 plt.show()
 plt.close()
 
