@@ -15,12 +15,13 @@ test_data, test_labels = lc.from_file('IrisTest2014.dt')
 n_function = Utility.normalize(train_data)
 normalized_train_data = n_function(train_data)
 normalized_test_data = n_function(test_data)
-lc.fit_fishers(normalized_train_data, train_labels)
+
 
 #######
 # 1.1 #
 #######
 
+lc.fit_fishers(train_data, train_labels)
 print "Training error for LDA: " + str(lc.evaluate(train_data, train_labels))
 print "Test error for LDA: " + str(lc.evaluate(test_data, test_labels))
 
@@ -56,7 +57,7 @@ plt.show()
 #######
 # 1.2 #
 #######
-
+lc.fit_fishers(normalized_train_data, train_labels)
 print "Training error on the transformed data: " + str(lc.evaluate(normalized_train_data, train_labels))
 print "Test error on the transformed data: " + str(lc.evaluate(normalized_test_data, test_labels))
 
