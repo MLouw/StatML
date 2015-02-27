@@ -63,12 +63,69 @@ print "Test error on the transformed data: "
 #######
 # 2.1 #
 #######
+lr = R.LinearRegression()
+train_data, train_targets = lr.parse_file("sunspotsTrainStatML.dt")
+test_data, test_targets = lr.parse_file("sunspotsTestStatML.dt")
+
+train_limit_2 = lr.limit_columns([4], train_data)
+test_limit_2 = lr.limit_columns([4], test_data)
+train_limit_1 = lr.limit_columns([2,3], train_data)
+test_limit_1 = lr.limit_columns([2,3], test_data)
+
+lr.fit(train_limit_2, train_targets)
+
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+test_prediction = lr.predict_all(test_limit_2)
+lr.draw_datapoints(ax, train_limit_2, train_targets, point_color=[1,0,0], label='Training data')
 
 print "Showing plot of x and y variables of training set"
+ax.set_title('Training set')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+plt.show()
+
+
 print "Showing plot of years vs. predicted sunspots"
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+
+lr.plot_evaluation(ax, 1861, test_targets, label='Actual', color=[0,1,0])
+lr.plot_evaluation(ax, 1861, test_prediction, label='Model 2')
+lr.fit(train_data, train_targets)
+test_prediction2 = lr.predict_all(test_data)
+lr.plot_evaluation(ax, 1861, test_prediction2, label='Model 3', color=[0,0,1])
+lr.fit(train_limit_1, train_targets)
+test_prediction3 = lr.predict_all(test_limit_1)
+lr.plot_evaluation(ax, 1861, test_prediction3, label='Model 1', color=[0,1,1])
+
+ax.set_title('Years vs. predicted sunspots')
+plt.show()
 
 #######
 # 2.2 #
 #######
 
 print "Showing plot of RMS error for different values of the prior precision parameter alpha"
+lr = R.LinearRegression()
+lr.fit(train_limit_2, train_targets, method='MAP', alpha=0.1)
+print lr.evaluate(test_limit_2, test_targets)
+
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+
+test_prediction = lr.predict_all(test_limit_2)
+
+lr.draw_datapoints(ax, train_limit_2, train_targets, point_color=[1,0,0], label='Training data')
+lr.draw_datapoints(ax, test_limit_2, test_targets, point_color=[0,1,0], label='Test targets')
+lr.draw_datapoints(ax, test_limit_2, test_prediction, point_color=[0,0,1], label='Test predictions')
+
+plt.show()
+
+R.compare_methods(train_data, train_targets, test_data, test_targets)
+
+m1 = [train_limit_1, train_targets, test_limit_1, test_targets, '-r', 'Model 1']
+m2 = [train_limit_2, train_targets, test_limit_2, test_targets, '-g', 'Model 2']
+m3 = [train_data, train_targets, test_data, test_targets, '-b', 'Model 3']
+
+R.compare_models_for_alpha([m1, m2, m3])
