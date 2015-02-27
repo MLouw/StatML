@@ -42,14 +42,14 @@ def plot_points(points, ax, point_color=[1,0,0], label=''):
     xs = [p[0] for p in points]
     ys = [p[1] for p in points]
     ax.scatter(xs,ys, color=point_color, label='Iris ' + label)
-    plt.gca().legend(loc='upper right')
+    legend1 = plt.gca().legend(loc='upper right')
 
 ##################
 # Plots the set  #
 # of iris data   #
 # points         #
 ##################
-def plot_irises(data, labels, ax, point_colors=[[1,0,0],[0,1,0],[0,0,1]]):
+def plot_irises(data, labels, ax, point_colors=[[1,0,0],[0,1,0],[0,0,1]], title=''):
     xmin = min([d[0] for d in data])
     xmax = max([d[0] for d in data])
     ymin = min([d[1] for d in data])
@@ -58,7 +58,7 @@ def plot_irises(data, labels, ax, point_colors=[[1,0,0],[0,1,0],[0,0,1]]):
     y_offset = (ymax - ymin)/10.0
     ax.set_xlim([xmin-x_offset, xmax+x_offset])
     ax.set_ylim([ymin-y_offset, ymax+y_offset])
-    ax.set_title('Irises')
+    ax.set_title('Irises '+ title)
     ax.set_xlabel('x')
     ax.set_ylabel('y')
 

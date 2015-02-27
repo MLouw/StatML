@@ -21,7 +21,7 @@ class LinearRegression():
     I/O:
     '''
 
-    #Parses a data file:
+    # Parses a data file:
     def parse_file(self, file_name):
         print >>sys.stderr, "Reading from file \'"+file_name+"\'..."
         features = []
@@ -34,18 +34,18 @@ class LinearRegression():
 
         return features, targets
 
-    #Fit the model to a set of features and labels given in a specific file:
+    # Fit the model to a set of features and labels given in a specific file:
     def fit_to_file(self, filename, method='ML', alpha=None):
         features, targets = self.parse_file(filename)
         self.fit(features, targets, method=method, alpha=alpha)
 
-    #Draws a set of data points:
+    # Draws a set of data points:
     def draw_datapoints(self, ax, xs, ys, point_color=[0,0,0], label='<No label>'):
         ax.scatter(xs,ys, color=point_color, label=label)
         plt.gca().legend(loc='upper right')
 
 
-    #Plots a time series of year vs. prediction:
+    # Plots a time series of year vs. prediction:
     def plot_evaluation(self, ax, start_year, targets, color=[1,0,0], label='No label'):
 
         offset = 10
@@ -66,7 +66,8 @@ class LinearRegression():
     Metrics & Constants:
     '''
 
-    #Applies the basis functions to a vector of features. An additional bias function is added:
+    # Applies the basis functions to a vector of features. 
+    # An additional bias function is added:
     def apply_basis_functions(self, x):
         return np.concatenate(([1], x))
 
@@ -74,11 +75,11 @@ class LinearRegression():
     Training:
     '''
 
-    #Limit a feature matrix to the specified columns:
+    # Limit a feature matrix to the specified columns:
     def limit_columns(self, used_columns, features):
         return [[feature[i] for i in used_columns] for feature in features]
 
-    #Fit the model to a set of features and labels using the specified method:
+    # Fit the model to a set of features and labels using the specified method:
     def fit(self, features, targets, method='ML', alpha=None, confirm=True):
         if method == 'ML':
             return self.fit_maximum_likelihood(features, targets, confirm)
@@ -88,66 +89,66 @@ class LinearRegression():
             print>>sys.stderr, "The method name "+method+" is not valid."
 
 
-    #Fit the model a set of features and labels using the maximum likelihood method:
+    # Fit the model a set of features and labels using the maximum likelihood method:
     def fit_maximum_likelihood(self, features, targets, confirm=True):
-        #Calculate the design matrix as specified by Bishop:
+        # Calculate the design matrix as specified by Bishop:
         design_matrix = [self.apply_basis_functions(x) for x in features]
 
-        #Take the pseudoinverse:
+        # Take the pseudoinverse:
         pinv_design_matrix = np.linalg.pinv(design_matrix)
 
-        #Calculate the weight vector:
+        # Calculate the weight vector:
         self.w = np.dot(pinv_design_matrix, targets)
 
         if confirm:
             print>>sys.stderr, "The model was fitted using maximum likelihood."
 
 
-    #Fit the model to a set of features and labels using the a posteori method:
+    # Fit the model to a set of features and labels using the a posteori method:
     def fit_maximum_a_posteori(self, features, targets, alpha, beta=1, confirm=True):
-        #Estimate the covariance:
+        # Estimate the covariance:
         covariance = self.posterior_covariance(features, alpha, beta)
 
-        #Estimate the mean:
+        # Estimate the mean:
         mean = self.posterior_mean(covariance, features, targets, beta)
 
-        #Set the mean as MAP estimate:
+        # Set the mean as MAP estimate:
         self.w = mean
 
         if confirm:
             print>>sys.stderr, "The model was fitted using maximum a posteori."
 
-    #Estimate the posterior mean:
+    # Estimate the posterior mean:
     def posterior_mean(self, posterior_covariance, features, targets, beta=1):
-        #Calculate the design matrix as specified by Bishop:
+        # Calculate the design matrix as specified by Bishop:
         design_matrix = [self.apply_basis_functions(x) for x in features]
 
-        #Follow the calculation given by Bishop:
+        # Follow the calculation given by Bishop:
         return np.multiply(beta, np.dot(posterior_covariance, np.dot(np.transpose(design_matrix), targets)))
 
-    #Estimate the posterior covariance:
+    # Estimate the posterior covariance:
     def posterior_covariance(self, features, alpha, beta=1):
-        #Calculate the design matrix as specified by Bishop:
+        # Calculate the design matrix as specified by Bishop:
         design_matrix = [self.apply_basis_functions(x) for x in features]
 
-        #Calculate the second term:
+        # Calculate the second term:
         st = np.multiply(beta, np.dot(np.transpose(design_matrix), design_matrix))
 
-        #Calculate the first term:
+        # Calculate the first term:
         ft = np.multiply(alpha, np.ones_like(st))
 
-        #Return the inverse of the sum:
+        # Return the inverse of the sum:
         return np.linalg.inv(np.add(ft, st))
 
     '''
     Prediction:
     '''
 
-    #Return the prediction for the given feature:
+    # Return the prediction for the given feature:
     def predict(self, feature):
         return np.dot(self.w, self.apply_basis_functions(feature))
 
-    #Return a list of predictions corresponding to a list of features:
+    # Return a list of predictions corresponding to a list of features:
     def predict_all(self, features):
         l = [None]*len(features)
 
@@ -160,15 +161,15 @@ class LinearRegression():
     Evaluation:
     '''
 
-    #Evaluate the performance of the regression through mean square error:
+    # Evaluate the performance of the regression through mean square error:
     def evaluate(self, features, targets):
-        #Make the predictions:
+        # Make the predictions:
         predictions = self.predict_all(features)
 
-        #Calculate square differences:
+        # Calculate square differences:
         s_diff = [(targets[i]-predictions[i])**2 for i in xrange(len(predictions))]
 
-        #Normalize and take the square root:
+        # Normalize and take the square root:
         return np.sqrt(1.0/len(predictions)*sum(s_diff))
 
 
@@ -176,13 +177,13 @@ class LinearRegression():
 Pretty plots:
 '''
 
-#Defines a wrapper for evaluation of MAP:
+# Defines a wrapper for evaluation of MAP:
 def map_eval_wrapper(training_data, training_targets, test_data, test_targets, alpha_val):
     map = LinearRegression()
     map.fit(training_data, training_targets, method='MAP', alpha = alpha_val, confirm=True)
     return map.evaluate(test_data, test_targets)
 
-#Performs a comparison of the three difference models:
+# Performs a comparison of the three difference models:
 def compare_models_for_alpha(model_list, ):
     alpha = np.linspace(10**(-5),100, num=1000)
 
@@ -197,7 +198,7 @@ def compare_models_for_alpha(model_list, ):
 
     pylab.show()
 
-#Performs a comparison of the maximum likelihood and maximum a posteori methods:
+# Performs a comparison of the maximum likelihood and maximum a posteori methods:
 def compare_methods(training_data, training_targets, test_data, test_targets):
     ml = LinearRegression()
     ml.fit(training_data, training_targets, confirm=False)

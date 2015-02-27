@@ -8,6 +8,7 @@ import codecs
 import numpy as np
 import Utility
 import math
+from matplotlib import pyplot as plt
 
 ###########################
 # Linear classifier used  #
@@ -124,6 +125,7 @@ class Linear_Classifier():
             yd = self.W[i][0]/self.W[i][2]
 
             ax.plot([-xd*iterations, xd*iterations], [-yd*(iterations+1),  yd*(iterations-1)], color=colors[i])
+            
 
     def draw_decision_boundaries(self, ax, iterations=20):
         ls = [None]*3
@@ -145,6 +147,7 @@ class Linear_Classifier():
                 limy = -limy
 
             ax.plot([px, limx], [py,  limy],color=[0,0,0])
+            
 
 '''Test playground'''
 if __name__ == '__main__':
