@@ -119,8 +119,16 @@ plt.close()
 
 print "Showing plot of RMS error for different values of the prior precision parameter alpha"
 lr = R.LinearRegression()
-lr.fit(train_limit_2, train_targets, method='MAP', alpha=0.1)
+lr.fit(train_limit_1, train_targets, method='MAP', alpha=0)
+print lr.evaluate(test_limit_1, test_targets)
+
+lr = R.LinearRegression()
+lr.fit(train_limit_2, train_targets, method='MAP', alpha=0)
 print lr.evaluate(test_limit_2, test_targets)
+
+lr = R.LinearRegression()
+lr.fit(train_data, train_targets, method='MAP', alpha=0)
+print lr.evaluate(test_data, test_targets)
 
 R.compare_methods(train_data, train_targets, test_data, test_targets)
 plt.close()
