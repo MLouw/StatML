@@ -51,7 +51,7 @@ class LinearRegression():
         offset = 10
 
         ax.set_xlim([start_year, start_year+len(targets)])
-        ax.set_ylim([min(targets)-offset, max(targets)+offset])
+        ax.set_ylim([min(targets)-offset, 200])
         ax.set_ylabel('Number of sunspots')
         ax.set_xlabel('Year')
 
