@@ -8,6 +8,7 @@ import sys
 import numpy as np
 from itertools import chain
 from sklearn import svm
+import Preprocessing as n
 
 '''
 I/O:
@@ -29,7 +30,7 @@ Training:
 '''
 
 def create_and_fit(train_data, train_labels, C, gamma):
-    clf = svm.SVC(kernel='rbf')
+    clf = svm.SVC(kernel='rbf', C=C, gamma=gamma)
     clf.fit(train_data, train_labels)
     return clf
 
@@ -78,6 +79,7 @@ def cross_validate(data, labels, k, params):
         #Create a classifier and fit it to the data:
         cvf = create_and_fit(train_data, train_labels, *params)
 
+
         #Evaluate accuracy
         acc += evaluate(cvf, validate_data, validate_labels)
 
@@ -87,12 +89,14 @@ def cross_validate(data, labels, k, params):
 train_data, train_labels = parse_file('data/parkinsonsTrainStatML.dt')
 test_data, test_labels = parse_file('data/parkinsonsTestStatML.dt')
 
-print cross_validate(train_data, train_labels, 5, [None, None])
+norm = n.normalize(train_data)
+
+print cross_validate(norm(train_data), train_labels, 5, [10000, 0.001])
 
 
-clf = svm.SVC(kernel='rbf')
-clf.fit(train_data, train_labels)
-print evaluate(clf, test_data, test_labels)
+#clf = svm.SVC(kernel='rbf')
+#clf.fit(train_data, train_labels)
+#print evaluate(clf, test_data, test_labels)
 
 # get support vectors
 #print clf.support_vectors_
