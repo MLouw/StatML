@@ -216,20 +216,24 @@ class NeuralNetwork():
 
         should_have_been_ys = [math.sin(x)/x for x in xs if x!=0]
 
-        x_offset = 1
-        y_offset = 1
+        x_offset = 0.5
+        y_offset = 0.3
 
-        ax.set_xlim([xs[0]-x_offset, xs[-1]+x_offset])
+        ax.set_xlim([xs[0], xs[-1]])
         ax.set_ylim([min(predicted_ys)-y_offset, max(predicted_ys)+y_offset])
 
-        ax.set_ylabel('Stuff')
-        ax.set_xlabel('Other stuff')
+        ax.set_xlabel('x')
+        ax.set_ylabel('sinc(x)')
 
-        ax.plot(xs,predicted_ys, color=[1,0,0], label="Is")
-        ax.plot([x for x in xs if x!=0],should_have_been_ys, color=[0,1,0], label="Should have been")
+        ax.set_xticks(np.arange(xs[0], xs[-1]+0.0001,2.0))
+        ax.set_yticks(np.arange(-0.5,1.5,0.5))
+
+
+        ax.plot(xs,predicted_ys, color=[1,0,0], label="Our estimation")
+        ax.plot([x for x in xs if x!=0],should_have_been_ys, color=[0,1,0], label="Actual value")
 
         plt.gca().legend(loc='upper right')
-
+        plt.grid()
 
 
 
