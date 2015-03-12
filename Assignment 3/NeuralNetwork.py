@@ -3,6 +3,8 @@ __author__ = 'Michael'
 import numpy as np
 import sys
 import codecs
+import math
+from matplotlib import pyplot as plt
 
 class NeuralNetwork():
 
@@ -80,6 +82,27 @@ class NeuralNetwork():
 
         return error
 
+    def train_network(self, train_features, train_labels, test_features, test_labels, training_rate=0.2, stopping_value=0.0005, max_iterations=10000):
+        for j in xrange(max_iterations):
+            update = nn.train_epoch(train_features, train_labels, training_rate=training_rate)
+            s_u = 0
+            for i in xrange(len(update)):
+                s_u += np.sum(np.multiply(update[i],update[i]))
+            update_norm = math.sqrt(s_u)
+
+            if j%10 == 9:
+                print "Iteration:",j+1
+                print "Train:", nn.evaluate(train_features, train_labels)
+                print "Test:", nn.evaluate(test_features, test_labels)
+
+            if update_norm < stopping_value:
+                print "Iteration:",j+1
+                print "Stop-Train:", nn.evaluate(train_features, train_labels)
+                print "Stop-Test:", nn.evaluate(test_features, test_labels)
+                return
+
+        print "Reached",max_iterations,"iterations"
+
     def train_epoch(self, features, labels, training_rate=0.2):
         gradient_sum = np.array([np.array([np.zeros(len(neuron)) for neuron in layer]) for layer in self.W])
 
@@ -89,8 +112,10 @@ class NeuralNetwork():
             for i in xrange(len(gradient_sum)):
                 gradient_sum[i] = np.add(gradient_sum[i], gradient[i])
 
-        weighted_gradients = np.multiply(-training_rate*len(features), gradient_sum)
+        weighted_gradients = np.multiply(-training_rate*1.0/len(features), gradient_sum)
         self.W = np.add(weighted_gradients, self.W)
+
+        return weighted_gradients
 
     #Backpropagation algorithm:
     def back_propagation(self, features, labels, training_rate=0.2, update=True):
@@ -112,6 +137,17 @@ class NeuralNetwork():
                         self.W[layer-1][neuron][previous_neuron] -= training_rate * temp
 
         return error,gradients
+
+    def evaluate(self, features, labels):
+        error_sum = 0
+        for i in xrange(len(features)):
+            out =self.forward_pass(features[i])
+
+            errors = np.subtract(out, labels[i])
+            error_sum += 0.5*sum([e**2 for e in errors])
+
+        return error_sum / float(len(features))
+
 
     def check_gradients(self, features, labels, epsillon):
         s = 0
@@ -171,6 +207,32 @@ class NeuralNetwork():
                 targets.append(float(feature[-1]))
 
         return features, targets
+
+    # Plots a series of samples from the learned function:
+    def plot_samples(self,ax):
+
+        xs = [float(j)/100 for j in xrange(-1000, 1001, 5)]
+        predicted_ys = [self.forward_pass([x])[0] for x in xs]
+
+        should_have_been_ys = [math.sin(x)/x for x in xs if x!=0]
+
+        x_offset = 1
+        y_offset = 1
+
+        ax.set_xlim([xs[0]-x_offset, xs[-1]+x_offset])
+        ax.set_ylim([min(predicted_ys)-y_offset, max(predicted_ys)+y_offset])
+
+        ax.set_ylabel('Stuff')
+        ax.set_xlabel('Other stuff')
+
+        ax.plot(xs,predicted_ys, color=[1,0,0], label="Is")
+        ax.plot([x for x in xs if x!=0],should_have_been_ys, color=[0,1,0], label="Should have been")
+
+        plt.gca().legend(loc='upper right')
+
+
+
+
 '''
 Testing Playground:
 '''
@@ -179,11 +241,20 @@ if __name__ == '__main__':
     nn = NeuralNetwork([1,2,1])
 
     train_data,train_labels = nn.parse_file('data/sincTrain25.dt')
-    test_data, test_labels = nn.parse_file('data/sincTest25.dt')
+    test_data, test_labels = nn.parse_file('data/sincValidate10.dt')
 
     print nn.check_gradients(train_data, train_labels, 10**(-7))
 
-    nn.train_epoch(train_data, train_labels)
+    #nn.train_epoch(train_data, train_labels)
+    #print nn.evaluate(test_data, test_labels)
+
+    nn.train_network(train_data, train_labels, test_data, test_labels)
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    nn.plot_samples(ax)
+    plt.show()
+    plt.close()
+
 
     '''
     nn.back_propagation(train[0], labels[0])
