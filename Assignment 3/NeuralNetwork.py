@@ -259,20 +259,21 @@ if __name__ == '__main__':
     plt.show()
     plt.close()
 
+    nn = NeuralNetwork([1,20,1])
 
-    '''
-    nn.back_propagation(train[0], labels[0])
+    train_data,train_labels = nn.parse_file('data/sincTrain25.dt')
+    test_data, test_labels = nn.parse_file('data/sincValidate10.dt')
 
-    #print nn.estimate_derivates(0.01, lambda x)
+    print nn.check_gradients(train_data, train_labels, 10**(-7))
+
+    #nn.train_epoch(train_data, train_labels)
+    #print nn.evaluate(test_data, test_labels)
+
+    nn.train_network(train_data, train_labels, test_data, test_labels)
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    nn.plot_samples(ax)
+    plt.show()
+    plt.close()
 
 
-    for i in xrange(10):
-        s=0
-        for j in xrange(len(train)):
-            q,_ = nn.back_propagation(train[j], labels[j],0.2)
-
-            print q
-        #if i %10000 == 0:
-            #print i, nn.deltas[-1]**2
-
-    '''
