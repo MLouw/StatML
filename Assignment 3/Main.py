@@ -87,4 +87,4 @@ print "Normalized test error:", SVM.evaluate(clf_norm, norm(test_data), test_lab
 # 2.3.1 #
 #########
 print "Numbers of bounded and free support vectors is being written to text file..."
-count_support_vectors(norm(train_data), train_labels, scale, norm_gamma)
+SVM.count_support_vectors(norm(train_data), train_labels, scale, norm_gamma)
