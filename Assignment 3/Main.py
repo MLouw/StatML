@@ -46,7 +46,7 @@ plt.close()
 print "Generating files of learning rate"
 for x in [0.2, 0.4, 0.6, 0.8, 1.0, 2.0]:
    nn = NN.NeuralNetwork([1,20,1])
-   nn.train_network(train_data, train_labels, test_data, test_labels, training_rate=x)
+   nn.train_network(train_data_20, train_labels_20, test_data_20, test_labels_20, training_rate=x)
 
 #######
 # 2.1 #
