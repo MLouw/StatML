@@ -62,6 +62,7 @@ def do_grid_search(data, labels, C_range, gamma_range):
     plt.subplots_adjust(left=0.05, right=0.95, bottom=0.2, top=0.95)
     plt.imshow(results, interpolation='nearest', cmap=plt.cm.spectral)
     plt.clim(0,1)
+    plt.title('Heatmap of accuracy')
     plt.xlabel('gamma')
     plt.ylabel('C')
     plt.colorbar()
@@ -132,47 +133,48 @@ def count_support_vectors(data, labels, C_range, gamma):
 
     n.save_string('\n'.join([' '.join(elem) for elem in result]), 'bound-and-free-support-vectors.dt')
 
+if __name__ == '__main__':
 
-train_data, train_labels = parse_file('data/parkinsonsTrainStatML.dt')
-test_data, test_labels = parse_file('data/parkinsonsTestStatML.dt')
+    train_data, train_labels = parse_file('data/parkinsonsTrainStatML.dt')
+    test_data, test_labels = parse_file('data/parkinsonsTestStatML.dt')
 
-norm = n.normalize(train_data)
-n.save_mean_and_variance(train_data, 'train')
-n.save_mean_and_variance(norm(train_data), 'norm-train')
-n.save_mean_and_variance(norm(test_data), 'norm-test')
+    norm = n.normalize(train_data)
+    n.save_mean_and_variance(train_data, 'train')
+    n.save_mean_and_variance(norm(train_data), 'norm-train')
+    n.save_mean_and_variance(norm(test_data), 'norm-test')
 
-scale = [10**v for v in xrange(-8,8)]
-C,gamma,error = do_grid_search(train_data, train_labels, scale,scale)
-norm_C, norm_gamma, norm_error = do_grid_search(norm(train_data), train_labels, scale,scale)
+    scale = [10**v for v in xrange(-8,8)]
+    C,gamma,error = do_grid_search(train_data, train_labels, scale,scale)
+    norm_C, norm_gamma, norm_error = do_grid_search(norm(train_data), train_labels, scale,scale)
 
-print "Raw data:", C, gamma, error
-print "Normalized data:", norm_C, norm_gamma, norm_error
+    print "Raw data:", C, gamma, error
+    print "Normalized data:", norm_C, norm_gamma, norm_error
 
-clf_raw = create_and_fit(train_data, train_labels, C, gamma)
-print "Raw training error:", evaluate(clf_raw, train_data, train_labels)
-print "Raw test error:", evaluate(clf_raw, test_data, test_labels)
+    clf_raw = create_and_fit(train_data, train_labels, C, gamma)
+    print "Raw training error:", evaluate(clf_raw, train_data, train_labels)
+    print "Raw test error:", evaluate(clf_raw, test_data, test_labels)
 
-clf_norm = create_and_fit(norm(train_data), train_labels, norm_C, norm_gamma)
-print "Normalized training error:", evaluate(clf_norm, norm(train_data), train_labels)
-print "Normalized test error:", evaluate(clf_norm, norm(test_data), test_labels)
+    clf_norm = create_and_fit(norm(train_data), train_labels, norm_C, norm_gamma)
+    print "Normalized training error:", evaluate(clf_norm, norm(train_data), train_labels)
+    print "Normalized test error:", evaluate(clf_norm, norm(test_data), test_labels)
 
-#clf = svm.SVC(kernel='rbf')
-#clf.fit(train_data, train_labels)
-#print evaluate(clf, test_data, test_labels)
+    #clf = svm.SVC(kernel='rbf')
+    #clf.fit(train_data, train_labels)
+    #print evaluate(clf, test_data, test_labels)
 
-count_support_vectors(norm(train_data), train_labels, scale, norm_gamma)
+    count_support_vectors(norm(train_data), train_labels, scale, norm_gamma)
 
-'''
-coefficients = clf_norm.dual_coef_[0]
-bounded = [c for c in coefficients if c == norm_C]
+    '''
+    coefficients = clf_norm.dual_coef_[0]
+    bounded = [c for c in coefficients if c == norm_C]
 
-print "Bounded support vectors:", len(bounded)
-print "Free support vectors:", len(coefficients) - len(bounded)
-'''
+    print "Bounded support vectors:", len(bounded)
+    print "Free support vectors:", len(coefficients) - len(bounded)
+    '''
 
-# get support vectors
-#print clf.support_vectors_
-# get indices of support vectors
-#print clf.support_
-# get number of support vectors for each class
-#print clf.n_support_
+    # get support vectors
+    #print clf.support_vectors_
+    # get indices of support vectors
+    #print clf.support_
+    # get number of support vectors for each class
+    #print clf.n_support_

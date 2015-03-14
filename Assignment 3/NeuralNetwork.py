@@ -89,19 +89,19 @@ class NeuralNetwork():
         train_eval = ['Train']
         test_eval = ['Test']
         for j in xrange(max_iterations):
-            update = nn.train_epoch(train_features, train_labels, training_rate=training_rate)
+            update = self.train_epoch(train_features, train_labels, training_rate=training_rate)
             s_u = 0
             for i in xrange(len(update)):
                 s_u += np.sum(np.multiply(update[i],update[i]))
             update_norm = math.sqrt(s_u)
 
             if j%500 == 499:
-                train_eval.append(str(nn.evaluate(train_features, train_labels)))
-                test_eval.append(str(nn.evaluate(test_features, test_labels)))
+                train_eval.append(str(self.evaluate(train_features, train_labels)))
+                test_eval.append(str(self.evaluate(test_features, test_labels)))
 
             if update_norm < stopping_value:
-                train_eval.append(str(nn.evaluate(train_features, train_labels)))
-                test_eval.append(str(nn.evaluate(test_features, test_labels)))
+                train_eval.append(str(self.evaluate(train_features, train_labels)))
+                test_eval.append(str(self.evaluate(test_features, test_labels)))
 
         #Fill arrays if the aren't full:
         while(len(train_eval) < len(itera)):
@@ -233,6 +233,7 @@ class NeuralNetwork():
 
         ax.set_xlabel('x')
         ax.set_ylabel('sinc(x)')
+        ax.set_title('Estimation of sinc(x)')
 
         ax.set_xticks(np.arange(xs[0], xs[-1]+0.0001,2.0))
         ax.set_yticks(np.arange(-0.5,1.5,0.5))
