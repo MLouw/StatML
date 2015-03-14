@@ -5,6 +5,7 @@ import sys
 import codecs
 import math
 from matplotlib import pyplot as plt
+import Helper
 
 class NeuralNetwork():
 
@@ -82,7 +83,11 @@ class NeuralNetwork():
 
         return error
 
-    def train_network(self, train_features, train_labels, test_features, test_labels, training_rate=0.2, stopping_value=0.0005, max_iterations=10000):
+    def train_network(self, train_features, train_labels, test_features, test_labels, training_rate=0.2, stopping_value=0.0005, max_iterations=12000):
+        itera = ['Epoch']
+        itera.extend([str(nu*500) for nu in xrange(max_iterations/500)])
+        train_eval = ['Train']
+        test_eval = ['Test']
         for j in xrange(max_iterations):
             update = nn.train_epoch(train_features, train_labels, training_rate=training_rate)
             s_u = 0
@@ -90,18 +95,22 @@ class NeuralNetwork():
                 s_u += np.sum(np.multiply(update[i],update[i]))
             update_norm = math.sqrt(s_u)
 
-            if j%10 == 9:
-                print "Iteration:",j+1
-                print "Train:", nn.evaluate(train_features, train_labels)
-                print "Test:", nn.evaluate(test_features, test_labels)
+            if j%500 == 499:
+                train_eval.append(str(nn.evaluate(train_features, train_labels)))
+                test_eval.append(str(nn.evaluate(test_features, test_labels)))
 
             if update_norm < stopping_value:
-                print "Iteration:",j+1
-                print "Stop-Train:", nn.evaluate(train_features, train_labels)
-                print "Stop-Test:", nn.evaluate(test_features, test_labels)
-                return
+                train_eval.append(str(nn.evaluate(train_features, train_labels)))
+                test_eval.append(str(nn.evaluate(test_features, test_labels)))
 
-        print "Reached",max_iterations,"iterations"
+        #Fill arrays if the aren't full:
+        while(len(train_eval) < len(itera)):
+            train_eval.append(str(train_eval[-1]))
+            test_eval.append(str(test_eval[-1]))
+
+        results = zip(itera, train_eval, test_eval)
+
+        Helper.save_string('\n'.join([' '.join(elem) for elem in results]), 'nn-'+str(len(self.output[1]))+'-error-learning-rate-'+str(training_rate)+'.dt')
 
     def train_epoch(self, features, labels, training_rate=0.2):
         gradient_sum = np.array([np.array([np.zeros(len(neuron)) for neuron in layer]) for layer in self.W])
