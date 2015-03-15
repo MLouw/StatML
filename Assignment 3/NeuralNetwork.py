@@ -1,5 +1,7 @@
 __author__ = 'Michael'
-
+'''
+Imports:
+'''
 import numpy as np
 import sys
 import codecs
@@ -7,10 +9,19 @@ import math
 from matplotlib import pyplot as plt
 import Helper
 
+'''
+Neural Network class:
+'''
+
+
+#Defines the class corresponding to the neural network. Takes as argument the shape of the network.
 class NeuralNetwork():
 
     #Fields:
-    #Todo
+    number_of_layers = None
+    output = None
+    deltas = None
+    W = None
 
     #Constructor:
     def __init__(self, network_shape):
@@ -32,11 +43,19 @@ class NeuralNetwork():
             self.W[layer-1] = np.array([np.array([0.5]*(network_shape[layer-1]+1))]*(network_shape[layer]))
             self.W[layer-1] = 0.2 * np.random.random_sample((network_shape[layer],network_shape[layer-1]+1)) - 0.1
 
+    '''
+    Transfer functions:
+    '''
+
     def sigmoid(self, x):
         return x/(1.0+abs(x))
 
     def d_sigmoid(self, x):
         return 1.0/((1.0+abs(x))**2)
+
+    '''
+    Prediction:
+    '''
 
     #Computes a forward pass through the network:
     def forward_pass(self, features):
@@ -57,11 +76,16 @@ class NeuralNetwork():
 
         return self.output[-1]
 
+    '''
+    Backpropagation gradient:
+    '''
 
+    #Calculate the delta-values required for the backpropagation gradient (See Bishop):
     def calculate_deltas(self, labels):
         #Calculate the deltas in the output layer:
         self.deltas[-1] = np.subtract(self.output[-1], labels)
 
+        #The error is the sum of squares-loss of the output layer:
         error = 0.5*sum([self.deltas[-1][i]**2 for i in xrange(len(self.deltas[-1]))])
 
         #Go through every layer in the reverse order, calculating deltas:
@@ -83,6 +107,33 @@ class NeuralNetwork():
 
         return error
 
+    #Backpropagation algorithm:
+    def back_propagation(self, features, labels, training_rate=0.2, update=True):
+        #Do a forward pass:
+        self.forward_pass(features)
+
+        #Compute deltas:
+        error = self.calculate_deltas(labels)
+
+        gradients = [[[None]*len(neuron) for neuron in layer] for layer in self.W]
+
+        #Calculate gradient for each edge:
+        for layer in xrange(1,self.number_of_layers):
+            for neuron in xrange(len(self.W[layer-1])):
+                for previous_neuron in xrange(len(self.W[layer-1][neuron])):
+                    temp = self.deltas[layer][neuron] * self.output[layer-1][previous_neuron]
+                    gradients[layer-1][neuron][previous_neuron] = temp
+                    if update:
+                        self.W[layer-1][neuron][previous_neuron] -= training_rate * temp
+
+        return error,gradients
+
+
+    '''
+    Network training:
+    '''
+
+    #Run a number of epochs:
     def train_network(self, train_features, train_labels, test_features, test_labels, training_rate=0.2, stopping_value=0.0005, max_iterations=12000):
         itera = ['Epoch']
         itera.extend([str(nu*500) for nu in xrange(max_iterations/500)])
@@ -112,6 +163,7 @@ class NeuralNetwork():
 
         Helper.save_string('\n'.join([' '.join(elem) for elem in results]), 'nn-'+str(len(self.output[1]))+'-error-learning-rate-'+str(training_rate)+'.dt')
 
+    #Run one epoch:
     def train_epoch(self, features, labels, training_rate=0.2):
         gradient_sum = np.array([np.array([np.zeros(len(neuron)) for neuron in layer]) for layer in self.W])
 
@@ -126,27 +178,12 @@ class NeuralNetwork():
 
         return weighted_gradients
 
-    #Backpropagation algorithm:
-    def back_propagation(self, features, labels, training_rate=0.2, update=True):
-        #Do a forward pass:
-        self.forward_pass(features)
 
-        #Compute deltas:
-        error = self.calculate_deltas(labels)
+    '''
+    Evaluation:
+    '''
 
-        gradients = [[[None]*len(neuron) for neuron in layer] for layer in self.W]
-
-        #Calculate gradient for each edge:
-        for layer in xrange(1,self.number_of_layers):
-            for neuron in xrange(len(self.W[layer-1])):
-                for previous_neuron in xrange(len(self.W[layer-1][neuron])):
-                    temp = self.deltas[layer][neuron] * self.output[layer-1][previous_neuron]
-                    gradients[layer-1][neuron][previous_neuron] = temp
-                    if update:
-                        self.W[layer-1][neuron][previous_neuron] -= training_rate * temp
-
-        return error,gradients
-
+    #Evaluate the output of the network on a dataset as the average error over all the examples:
     def evaluate(self, features, labels):
         error_sum = 0
         for i in xrange(len(features)):
@@ -158,6 +195,7 @@ class NeuralNetwork():
         return error_sum / float(len(features))
 
 
+    #Evaluate the backpropagation gradient by comparison with a finite differences gradient:
     def check_gradients(self, features, labels, epsillon):
         s = 0
 
@@ -203,6 +241,9 @@ class NeuralNetwork():
 
         return s
 
+    '''
+    I/O methods:
+    '''
 
     # Parses a data file:
     def parse_file(self, file_name):
@@ -244,7 +285,6 @@ class NeuralNetwork():
 
         plt.gca().legend(loc='upper right')
         plt.grid()
-
 
 
 '''
